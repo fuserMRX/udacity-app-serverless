@@ -141,8 +141,8 @@ functions:
           route: $disconnect
   
   SyncWithElasticsearch:
-    # environment:
-    #   ES_ENDPOINT: !GetAtt ImagesSearch.DomainEndpoint
+    environment:
+      ES_ENDPOINT: !GetAtt ImagesSearch.DomainEndpoint
     handler: src/lambda/dynamoDb/elasticSearchSync.handler
     events:
       - stream:
@@ -278,8 +278,14 @@ resources:
         AccessPolicies:
           Version: '2012-10-17'
           Statement:
-            -
-              Effect: Allow
+            - Effect: Allow
+              Principal:
+                # arn:aws:sts::606716607201:assumed-role/serverless-udagram-app-dev-us-east-1-lambdaRole/serverless-udagram-app-dev-SyncWithElasticsearch
+                AWS: !Sub arn:aws:sts::${AWS::AccountId}:assumed-role/${self:service}-${self:provider.stage}-${self:provider.region}-lambdaRole/serverless-udagram-app-${self:provider.stage}-SyncWithElasticsearch
+              Action: es:ESHttp*
+              Resource: !Sub arn:aws:es:${self:provider.region}:${AWS::AccountId}:domain/images-search-${self:provider.stage}/*
+
+            - Effect: Allow
               Principal:
                 AWS: '*'
               Action: 'es:ESHttp*'

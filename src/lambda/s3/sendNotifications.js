@@ -15,16 +15,14 @@ const connectionParams = {
 const apiGateway = new AWS.ApiGatewayManagementApi(connectionParams);
 
 export const handler = async (event) => {
-    console.log('Processing event ', JSON.stringify(event));
-    // console.log('Processing SNS event ', JSON.stringify(event));
-    // for (const snsRecord of event.Records) {
-    //     const s3EventStr = snsRecord.Sns.Message;
-    //     console.log('Processing S3 event', s3EventStr);
-    //     const s3Event = JSON.parse(s3EventStr);
+    console.log('Processing SNS event ', JSON.stringify(event));
+    for (const snsRecord of event.Records) {
+        const s3EventStr = snsRecord.Sns.Message;
+        console.log('Processing S3 event', s3EventStr);
+        const s3Event = JSON.parse(s3EventStr);
 
-    await processS3Event(event);
-    // await processS3Event(s3Event);
-    // }
+        await processS3Event(s3Event);
+    }
 };
 
 async function processS3Event(s3Event) {

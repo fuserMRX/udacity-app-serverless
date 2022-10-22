@@ -26,6 +26,8 @@
     "http-aws-es": "^6.0.0",
     "jimp": "^0.6.8",
     "source-map-support": "^0.5.21",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "middy": "^0.25.0"
   }
 }

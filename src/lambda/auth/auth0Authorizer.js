@@ -8,66 +8,66 @@ const secretId = process.env.AUTH_0_SECRET_ID
 const secretField = process.env.AUTH_0_SECRET_FIELD
 
 export const handler = middy(async (event, context) => {
-  try {
-    const decodedToken = verifyToken(
-      event.authorizationToken,
-      context.AUTH0_SECRET[secretField]
-    )
-    console.log('User was authorized', decodedToken)
+    try {
+        const decodedToken = verifyToken(
+            event.authorizationToken,
+            context.AUTH0_SECRET[secretField]
+        )
+        console.log('User was authorized', decodedToken)
 
-    return {
-      principalId: decodedToken.sub,
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Action: 'execute-api:Invoke',
-            Effect: 'Allow',
-            Resource: '*'
-          }
-        ]
-      }
-    }
-  } catch (e) {
-    console.log('User was not authorized', e.message)
+        return {
+            principalId: decodedToken.sub,
+            policyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                    {
+                        Action: 'execute-api:Invoke',
+                        Effect: 'Allow',
+                        Resource: '*'
+                    }
+                ]
+            }
+        }
+    } catch (e) {
+        console.log('User was not authorized', e.message)
 
-    return {
-      principalId: 'user',
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Action: 'execute-api:Invoke',
-            Effect: 'Deny',
-            Resource: '*'
-          }
-        ]
-      }
+        return {
+            principalId: 'user',
+            policyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                    {
+                        Action: 'execute-api:Invoke',
+                        Effect: 'Deny',
+                        Resource: '*'
+                    }
+                ]
+            }
+        }
     }
-  }
 })
 
 function verifyToken(authHeader, secret) {
-  if (!authHeader)
-    throw new Error('No authentication header')
+    if (!authHeader)
+        throw new Error('No authentication header')
 
-  if (!authHeader.toLowerCase().startsWith('bearer '))
-    throw new Error('Invalid authentication header')
+    if (!authHeader.toLowerCase().startsWith('bearer '))
+        throw new Error('Invalid authentication header')
 
-  const split = authHeader.split(' ')
-  const token = split[1]
+    const split = authHeader.split(' ')
+    const token = split[1]
 
-  return verify(token, secret);
+    return verify(token, secret);
 }
 
 handler.use(
-  secretsManager({
-    cache: true,
-    cacheExpiryInMillis: 60000,
-    // Throw an error if can't read the secret
-    throwOnFailedCall: true,
-    secrets: {
-      AUTH0_SECRET: secretId
-    }
-  })
+    secretsManager({
+        cache: true,
+        cacheExpiryInMillis: 60000,
+        // Throw an error if can't read the secret
+        throwOnFailedCall: true,
+        secrets: {
+            AUTH0_SECRET: secretId
+        }
+    })
 )

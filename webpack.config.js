@@ -2,39 +2,22 @@ const path = require('path');
 const slsw = require('serverless-webpack');
 
 module.exports = {
+  mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   entry: slsw.lib.entries,
+  devtool: 'source-map',
+  resolve: {
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+  },
   output: {
     libraryTarget: 'commonjs',
-    filename: '[name].js',
     path: path.join(__dirname, '.webpack'),
+    filename: '[name].js',
   },
-  mode: 'development',
   target: 'node',
   module: {
     rules: [
-      {
-        test: /\.js$/, // include .js files
-        enforce: 'pre', // preload the jshint loader
-        exclude: /node_modules/, // exclude any and all files in the node_modules folder
-        include: __dirname,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              presets: [
-                [
-                  '@babel/preset-env',
-                  {
-                    targets: {
-                      node: 'current',
-                    },
-                  },
-                ],
-              ],
-            },
-          },
-        ],
-      },
+      // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
+      { test: /\.tsx?$/, loader: 'ts-loader' },
     ],
   },
 };

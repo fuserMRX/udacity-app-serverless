@@ -15,6 +15,10 @@ plugins:
   # emulate API Gateway and AWS Lambda
   - serverless-offline
 
+#Uncomment to enable individual packaging
+package:
+  individually: true
+
 provider:
   name: aws
   runtime: nodejs16.x
